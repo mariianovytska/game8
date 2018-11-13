@@ -11,10 +11,10 @@ public class Main {
         };
         int[][] range2 = {
                 {1, 2, 3},
-                {8, 7, 6},
-                {0, 5, 4},
+                {4, 5, 6},
+                {0, 7, 8},
         };
         int [] rule = {3,1,4,2};
-        System.out.println(game8.play(range));
+        System.out.println(game8.playGame8(range2));
     }
 }
