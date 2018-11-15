@@ -15,6 +15,6 @@ public class Main {
                 {0, 7, 8},
         };
         int [] rule = {3,1,4,2};
-        System.out.println(game8.playGame8(range2));
+        System.out.println(game8.playGame8(range));
     }
 }

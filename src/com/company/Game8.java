@@ -5,32 +5,29 @@ import java.util.UUID;
 public class Game8 {
 
     private static String ideal = "123456780";
-
+    private int step = 0;
 
     public String playGame8(int [][] range){
-        String file = fileNameBuilder();
-        int step = 0;
+        String file = FileBuilder.fileNameBuilder();
         System.out.println("\nRANGE NUMBER: "+ ++step);
         System.out.println(toString(range));
-        if(!Converter.arrayToString(range).equals(ideal)){
-            String base = Converter.arrayToString(range).concat("t");
-            FileBuilder.writeToFile(file, base);
-            next(range, file);
-        } else {
-            return "CONGRATS!! You WIN the 'GAME 8' on the FIRST STEP";
-        }
-        while (FileBuilder.getRange(file)!=null){
-            int[][] newRange = copyArray(FileBuilder.getRange(file));
+        String base = Converter.arrayToString(range);
+        FileBuilder.writeToFile(file, base);
+        int index = 0;
+        while (true){
+            int[][] newRange = copyArray(FileBuilder.getRangeAt(file, index++));
+            if(newRange == null){
+                break;
+            }
             if(!Converter.arrayToString(newRange).equals(ideal)){
                 System.out.println("\nRANGE NUMBER: "+ ++step);
                 System.out.println(toString(newRange));
-                FileBuilder.rewriteFile(file, Converter.arrayToString(newRange));
                 next(newRange, file);
             } else {
                 return "CONGRATS!! You WIN the 'GAME 8' on step: "+step;
             }
         }
-           return "Sorry You FAILED GAME 8";
+        return "Sorry You FAILED GAME 8";
     }
 
     private void next(int [][] range, String file){
@@ -77,7 +74,7 @@ public class Game8 {
     private void saveRangeInFile(String file, int [][] range, Integer direction){
         if(!FileBuilder.isAlreadyInFile(file, range)){
             System.out.println("Saved range direction "+direction+": "+ Converter.arrayToString(range));
-            String base = Converter.arrayToString(range).concat("f");
+            String base = Converter.arrayToString(range);
             FileBuilder.writeToFile(file, base);
         }
     }
@@ -90,11 +87,6 @@ public class Game8 {
             }
         }
         return copy;
-    }
-
-    private String fileNameBuilder(){
-        return UUID.randomUUID().toString()+".txt";
-
     }
 
     private String toString(int [][] range){
