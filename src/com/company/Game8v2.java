@@ -1,8 +1,6 @@
 package com.company;
 
-import java.util.UUID;
-
-public class Game8 {
+public class Game8v2 {
 
     private static String ideal = "123456780";
     private int step = 0;
