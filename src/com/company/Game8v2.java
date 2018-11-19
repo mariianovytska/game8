@@ -4,31 +4,47 @@ public class Game8v2 {
 
     private static String ideal = "123456780";
     private int step = 0;
+    private String file = FileBuilder.fileNameBuilder();
+    private int index = 1;
+    private int k;
+    private boolean first = false;
+    private int st = 0;
 
     public String playGame8(int [][] range){
-        String file = FileBuilder.fileNameBuilder();
-        System.out.println("\nRANGE NUMBER: "+ ++step);
-        System.out.println(toString(range));
         String base = Converter.arrayToString(range);
-        FileBuilder.writeToFile(file, base);
-        int index = 0;
-        while (true){
-            int[][] newRange = copyArray(FileBuilder.getRangeAt(file, index++));
-            if(newRange == null){
-                break;
-            }
-            if(!Converter.arrayToString(newRange).equals(ideal)){
-                System.out.println("\nRANGE NUMBER: "+ ++step);
+        String isFind = "N";
+        if(base.equals(ideal)){
+            return "CONGRATS!! You WIN the 'GAME 8' on step: "+step;
+        } else {
+            FileBuilder.writeToFile(file, base);
+            while (isFind.equals("N")) {
+                int[][] newRange = null;
+                if (k == 0) {
+                    if (!first) {
+                        newRange = FileBuilder.getRangeAt(file, --index);
+                        first = true;
+                    } else {
+                        newRange = FileBuilder.getRangeAt(file, index-1-st);
+                        ++st;
+                    }
+                } else {
+                    st = 0;
+                    newRange = FileBuilder.getRangeAt(file, index);
+                }
+                if (newRange == null) {
+                    break;
+                }
+                System.out.println("\nRANGE NUMBER: " + ++step);
                 System.out.println(toString(newRange));
-                next(newRange, file);
-            } else {
-                return "CONGRATS!! You WIN the 'GAME 8' on step: "+step;
+                int[] start = startPoint(newRange);
+                isFind = saveDirections(newRange, start);
             }
         }
-        return "Sorry You FAILED GAME 8";
+        return "\nCONGRATS!! You WIN the 'GAME 8' on step: "+step
+                + "\n" + toString(Converter.stringToArray(isFind));
     }
 
-    private void next(int [][] range, String file){
+    private  int [] startPoint(int [][] range){
         int startI = 0;
         int startJ = 0;
         for(int i = 0; i < range.length; i++){
@@ -39,41 +55,69 @@ public class Game8v2 {
                 }
             }
         }
-        saveDirections(range, file, startI, startJ);
+        return new int[] {startI, startJ};
     }
 
-    private void saveDirections(int [][] range, String file, int startI, int startJ){
-        if(startJ + 1 < range.length){
-            int [][] newRange = copyArray(range);
-            newRange[startI][startJ] = range[startI][startJ + 1];
-            newRange[startI][startJ + 1] = 0;
-            saveRangeInFile(file, newRange, 1);
+    private String saveDirections(int [][] range, int [] startPoints){
+        k = 0;
+        int i = startPoints[0];
+        int j = startPoints[1];
+        int [][] newRange = copyArray(range);
+        while (j + 1 < range.length){
+            newRange[i][j] = range[i][j + 1];
+            newRange[i][j + 1] = 0;
+            saveRangeInFile(newRange, 1);
+            if(Converter.arrayToString(newRange).equals(ideal)){
+                return Converter.arrayToString(newRange);
+            }
+            ++j;
         }
-        if(startJ - 1 >= 0){
-            int [][] newRange = copyArray(range);
-            newRange[startI][startJ] = range[startI][startJ - 1];
-            newRange[startI][startJ - 1] = 0;
-            saveRangeInFile(file, newRange, 2);
+        i = startPoints[0];
+        j = startPoints[1];
+        newRange = copyArray(range);
+        while (j - 1 >= 0){
+            newRange[i][j] = range[i][j - 1];
+            newRange[i][j - 1] = 0;
+            saveRangeInFile(newRange, 2);
+            if(Converter.arrayToString(newRange).equals(ideal)){
+                return Converter.arrayToString(newRange);
+            }
+            --j;
         }
-        if(startI - 1 >= 0){
-            int [][] newRange = copyArray(range);
-            newRange[startI][startJ] = range[startI - 1][startJ];
-            newRange[startI - 1][startJ] = 0;
-            saveRangeInFile(file, newRange, 3);
+        i = startPoints[0];
+        j = startPoints[1];
+        newRange = copyArray(range);
+        while (i - 1 >= 0){
+            newRange[i][j] = range[i - 1][j];
+            newRange[i - 1][j] = 0;
+            saveRangeInFile(newRange, 3);
+            if(Converter.arrayToString(newRange).equals(ideal)){
+                return Converter.arrayToString(newRange);
+            }
+            --i;
         }
-        if(startI + 1 < range.length){
-            int [][] newRange = copyArray(range);
-            newRange[startI][startJ] = range[startI + 1][startJ];
-            newRange[startI + 1][startJ] = 0;
-            saveRangeInFile(file, newRange, 4);
+        i = startPoints[0];
+        j = startPoints[1];
+        newRange = copyArray(range);
+        while (i + 1 < range.length){
+            newRange[i][j] = range[i + 1][j];
+            newRange[i + 1][j] = 0;
+            saveRangeInFile(newRange, 4);
+            if(Converter.arrayToString(newRange).equals(ideal)){
+                return Converter.arrayToString(newRange);
+            }
+            ++i;
         }
+        return "N";
     }
 
-    private void saveRangeInFile(String file, int [][] range, Integer direction){
+    private void saveRangeInFile(int [][] range, int direction){
         if(!FileBuilder.isAlreadyInFile(file, range)){
             System.out.println("Saved range direction "+direction+": "+ Converter.arrayToString(range));
             String base = Converter.arrayToString(range);
             FileBuilder.writeToFile(file, base);
+            ++index;
+            ++k;
         }
     }
 
